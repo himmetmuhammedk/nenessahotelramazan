@@ -22,11 +22,11 @@
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(to bottom, #0f172a, #020617, #064e3b);
-            background-attachment: fixed;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
             color: #f8fafc;
+            min-height: 100vh;
         }
         .font-serif {
             font-family: 'Playfair Display', serif;
@@ -41,6 +41,34 @@
         .gpu-accelerated {
             transform: translateZ(0);
             will-change: transform, opacity;
+        }
+
+        /* Falling Stars Animation */
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(20px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        .star {
+            position: fixed;
+            color: #fbbf24;
+            user-select: none;
+            pointer-events: none;
+            z-index: 0;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px #fbbf24, 0 0 10px #f59e0b;
+            filter: drop-shadow(0 0 2px rgba(251, 191, 36, 0.8));
         }
 
         /* Logo Heartbeat Animation */
@@ -119,6 +147,42 @@
             { id: 12, title: "Patatesli Tava", url: "https://res.cloudinary.com/dejx0brol/image/upload/f_auto,q_auto/v1772123845/patatesli_tava_sdy93j.jpg" }
         ];
 
+        const Stars = () => {
+            const [stars, setStars] = useState([]);
+            
+            useEffect(() => {
+                const starCount = 40;
+                const newStars = Array.from({ length: starCount }).map((_, i) => ({
+                    id: i,
+                    left: `${Math.random() * 100}%`,
+                    duration: `${Math.random() * 8 + 4}s`,
+                    delay: `${Math.random() * 15}s`,
+                    size: `${Math.random() * 6 + 4}px`
+                }));
+                setStars(newStars);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+                    {stars.map(star => (
+                        <div
+                            key={star.id}
+                            className="star"
+                            style={{
+                                left: star.left,
+                                animationDuration: star.duration,
+                                animationDelay: star.delay,
+                                fontSize: star.size,
+                                top: '-20px'
+                            }}
+                        >
+                            ★
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
         function App() {
             const [currentIndex, setCurrentIndex] = useState(0);
             const [direction, setDirection] = useState(0);
@@ -159,6 +223,7 @@
 
             return (
                 <div className="min-h-screen text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col relative">
+                    <Stars />
                     {/* Immersive Background */}
                     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
                         <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]" />
@@ -214,7 +279,7 @@
                                     className="absolute inset-0 w-full h-full touch-none gpu-accelerated"
                                 >
                                     <div 
-                                        className="w-full h-full rounded-[2rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] relative group cursor-pointer"
+                                        className="w-full h-full rounded-[2rem] overflow-hidden relative group cursor-pointer"
                                         onClick={() => setIsZoomed(true)}
                                     >
                                         <img
@@ -277,19 +342,7 @@
 
                     {/* Footer / Call to Action */}
                     <footer className="relative z-10 px-6 pb-4 pt-0">
-                        <div className="max-w-md mx-auto space-y-2">
-                            <div className="flex items-center justify-center gap-8 py-2">
-                                <a href="https://wa.me/905321308368" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110 active:scale-95">
-                                    <img src="https://res.cloudinary.com/dejx0brol/image/upload/v1772124389/whatsapp_eipttz.png" alt="WhatsApp" className="h-8 w-8 object-contain" />
-                                </a>
-                                <a href="https://www.instagram.com/nenessahotel/" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110 active:scale-95">
-                                    <img src="https://res.cloudinary.com/dejx0brol/image/upload/v1772124395/instagram_theqgx.png" alt="Instagram" className="h-8 w-8 object-contain" />
-                                </a>
-                                <a href="https://www.facebook.com/nenessahotel/" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110 active:scale-95">
-                                    <img src="https://res.cloudinary.com/dejx0brol/image/upload/v1772124397/facebook_tctrpv.png" alt="Facebook" className="h-8 w-8 object-contain" />
-                                </a>
-                            </div>
-
+                        <div className="max-w-md mx-auto space-y-4">
                             <motion.a
                                 href="tel:+905321308368"
                                 whileHover={{ scale: 1.01, y: -1 }}
@@ -309,6 +362,18 @@
                                     <Icons.ChevronRight />
                                 </div>
                             </motion.a>
+
+                            <div className="flex items-center justify-center gap-8 py-2">
+                                <a href="https://wa.me/905321308368" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110 active:scale-95">
+                                    <img src="https://res.cloudinary.com/dejx0brol/image/upload/v1772124389/whatsapp_eipttz.png" alt="WhatsApp" className="h-8 w-8 object-contain" />
+                                </a>
+                                <a href="https://www.instagram.com/nenessahotel/" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110 active:scale-95">
+                                    <img src="https://res.cloudinary.com/dejx0brol/image/upload/v1772124395/instagram_theqgx.png" alt="Instagram" className="h-8 w-8 object-contain" />
+                                </a>
+                                <a href="https://www.facebook.com/nenessahotel/" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110 active:scale-95">
+                                    <img src="https://res.cloudinary.com/dejx0brol/image/upload/v1772124397/facebook_tctrpv.png" alt="Facebook" className="h-8 w-8 object-contain" />
+                                </a>
+                            </div>
 
                             <div className="text-center">
                                 <p className="text-[10px] text-slate-500 font-medium flex items-center justify-center gap-2">
@@ -339,7 +404,7 @@
                                     <img 
                                         src={MENU_IMAGES[currentIndex].url} 
                                         alt={MENU_IMAGES[currentIndex].title}
-                                        className="max-w-full max-h-[90vh] rounded-xl shadow-2xl"
+                                        className="max-w-full max-h-[90vh] rounded-xl"
                                         loading="lazy"
                                         decoding="async"
                                     />
